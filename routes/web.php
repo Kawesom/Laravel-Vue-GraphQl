@@ -2,16 +2,45 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+    $response = Http::post('http://localhost:8000/graphql', [
+        'query' => '
+            query {
+                posts {
+                    data {
+                        id
+                        title
+                        body
+                        created_at
+                        updated_at
+                        }
+                    }
+                }
+        '
     ]);
+    //dd($response->json());
+    return Inertia::render('Welcome', [
+        'Rposts' => $response->json()['data']['posts']['data']
+    ]);
+});
+
+Route::get('/create', function () {
+    $response = Http::post('http://localhost:8000/graphql', [
+        'query' => '
+            mutation {
+                createPostResolver(user_id: 1, title: "Hello from Laravel", body: "Laravel") {
+                    id
+                    title
+                }
+            }
+        '
+    ]);
+
+    return $response->json();
 });
 
 Route::get('/dashboard', function () {

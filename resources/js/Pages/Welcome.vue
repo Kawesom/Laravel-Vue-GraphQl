@@ -6,6 +6,10 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const posts = ref([]);
 
+defineProps([
+    //Rposts: Array,
+])
+
 onMounted(() => {
     axios('http://localhost:8000/graphql', {
         method: 'POST',
