@@ -1,0 +1,85 @@
+"A date string with format `Y-m-d`, e.g. `2018-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"Indicates what fields are available at the top level of a query operation."
+type Query {
+    "Find a single user by an identifying attribute."
+    user(
+      "Search by primary key."
+      id: ID @eq @rules(apply: ["prohibits:email", "required_without:email"])
+
+      "Search by email address."
+      email: String @eq @rules(apply: ["prohibits:id", "required_without:id", "email"])
+    ): User @find
+
+    "List multiple users."
+    users(
+      "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
+      name: String @where(operator: "like")
+    ): [User!]! @paginate(defaultCount: 10)
+
+    "Find a single post by an identifying attribute."
+    post(
+      "Search by primary key."
+      id: ID @eq @rules(apply: ["prohibits:title", "required_without:title"])
+
+
+    ): Post @find
+
+    "List multiple posts."
+    posts(
+      "Filters by title. Accepts SQL ILIKE wildcards `%` and `_`."
+      title: String @where(operator: "ilike")
+
+      "Filters by body. Accepts SQL ILIKE wildcards `%` and `_`."
+      body: String @where(operator: "ilike")
+    ): [Post!]! @paginate(defaultCount: 10) @orderBy(column: "created_at", direction: DESC)
+}
+
+"Account of a person who utilizes this application."
+type User {
+    "Unique primary key."
+    id: ID!
+
+    "Non-unique name."
+    name: String!
+
+    "Unique email address."
+    email: String!
+
+    "Posts a user has"
+    posts: [Post!]! @hasMany
+
+    "When the email was verified."
+    email_verified_at: DateTime
+
+    "When the account was created."
+    created_at: DateTime!
+
+    "When the account was last updated."
+    updated_at: DateTime!
+}
+
+"Posts made by Users."
+type Post {
+    "Unique primary key."
+    id: ID!
+
+    "Non-unique title of post."
+    title: String!
+
+    "Body of Post"
+    body: String!
+
+    "User that owns the post"
+    user: User! @belongsTo
+
+    "When the account was created."
+    created_at: DateTime!
+
+    "When the account was last updated."
+    updated_at: DateTime!
+}
