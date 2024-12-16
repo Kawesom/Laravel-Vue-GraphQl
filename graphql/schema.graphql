@@ -21,12 +21,16 @@ type Query {
       name: String @where(operator: "like")
     ): [User!]! @paginate(defaultCount: 10)
 
+    postsResolver: [Post!]! @field(resolver: "App\\GraphQL\\Queries\\PostsResolver")
+
+    postResolver(
+      id: ID!
+    ): Post @field(resolver: "App\\GraphQL\\Queries\\PostResolver")
+
     "Find a single post by an identifying attribute."
     post(
       "Search by primary key."
       id: ID @eq @rules(apply: ["prohibits:title", "required_without:title"])
-
-
     ): Post @find
 
     "List multiple posts."
@@ -39,7 +43,7 @@ type Query {
     ): [Post!]! @paginate(defaultCount: 10) @orderBy(column: "created_at", direction: DESC)
 }
 
-Equivalent to requests
+"Equivalent to requests"
 type Mutation {
   createPost(
     "Create Post"
@@ -47,6 +51,13 @@ type Mutation {
     title: String! @rules(apply: ["required", "min:4"])
     body: String!  @rules(apply: ["required", "min:4"])
   ) : Post @create
+
+  createPostResolver(
+    "Create Post"
+    user_id: ID!
+    title: String! @rules(apply: ["required", "min:4"])
+    body: String!  @rules(apply: ["required", "min:4"])
+  ) : Post @field(resolver: "App\\GraphQL\\Mutations\\CreatePostResolver")
 
   updatePost(
     "update a post's title and body using it's Id"
