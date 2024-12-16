@@ -39,6 +39,28 @@ type Query {
     ): [Post!]! @paginate(defaultCount: 10) @orderBy(column: "created_at", direction: DESC)
 }
 
+Equivalent to requests
+type Mutation {
+  createPost(
+    "Create Post"
+    user_id: ID!
+    title: String! @rules(apply: ["required", "min:4"])
+    body: String!  @rules(apply: ["required", "min:4"])
+  ) : Post @create
+
+  updatePost(
+    "update a post's title and body using it's Id"
+    id: ID!
+    title: String! @rules(apply: ["required", "min:4"])
+    body: String!  @rules(apply: ["required", "min:4"])
+  ) : Post @update
+
+  deletePost(
+    "Delete a post by it's Id"
+    id: ID! @where(column: id, operator:"=")
+  ) : Post @delete
+}
+
 "Account of a person who utilizes this application."
 type User {
     "Unique primary key."
