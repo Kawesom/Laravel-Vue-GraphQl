@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+Route::get('/', function() {
+    return Inertia::render('Welcome');
+});
+/*
 Route::get('/', function () {
     $response = Http::post('http://localhost:8000/graphql', [
         'query' => '
@@ -42,6 +46,7 @@ Route::get('/create', function () {
 
     return $response->json();
 });
+*/
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

@@ -3,6 +3,19 @@ import { Head, Link } from '@inertiajs/vue3';
 import axios, { Axios } from 'axios';
 import { onMounted, ref } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { useQuery } from '@vue/apollo-composable'
+import gql from 'graphql-tag'
+
+    const { users } = useQuery(gql`
+      query getUsers {
+        users {
+          id
+          firstname
+          lastname
+          email
+        }
+      }
+    `)
 
 const posts = ref([]);
 
