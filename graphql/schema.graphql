@@ -5,7 +5,7 @@ scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 
 
-#import sanctum.graphql 
+#import sanctum.graphql
 
 "Indicates what fields are available at the top level of a query operation."
 type Query {
