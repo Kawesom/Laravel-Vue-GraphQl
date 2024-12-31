@@ -4,6 +4,9 @@ scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 "A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 
+
+#import sanctum.graphql 
+
 "Indicates what fields are available at the top level of a query operation."
 type Query {
     "Find a single user by an identifying attribute."
@@ -19,7 +22,7 @@ type Query {
     users(
       "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
       name: String @where(operator: "like")
-    ): [User!]! @paginate(defaultCount: 10)
+    ): [User!]! @all @guard @can(ability: "viewAny")#@paginate(defaultCount: 10)
 
     postsResolver: [Post!]! @field(resolver: "App\\GraphQL\\Queries\\PostsResolver")
 
@@ -49,10 +52,9 @@ type Query {
 type Mutation {
   createPost(
     "Create Post"
-    user_id: ID!
     title: String! @rules(apply: ["required", "min:4"])
     body: String!  @rules(apply: ["required", "min:4"])
-  ) : Post @create
+  ) : Post @create @guard @inject(context: "user.id", name: "user_id")
 
   createPostResolver(
     "Create Post"
@@ -66,12 +68,12 @@ type Mutation {
     id: ID!
     title: String! @rules(apply: ["required", "min:4"])
     body: String!  @rules(apply: ["required", "min:4"])
-  ) : Post @update
+  ) : Post @update @guard @can(ability: "update", find: "id")
 
   deletePost(
     "Delete a post by it's Id"
     id: ID! @where(column: id, operator:"=")
-  ) : Post @delete
+  ) : Post @delete  @guard @can(ability: "delete", find: "id")
 
   loginTest(
     email: String!
@@ -95,6 +97,9 @@ type User {
 
     "Unique email address."
     email: String!
+
+    "is this user an admin"
+    is_admin: Boolean!
 
     "Posts a user has"
     posts: [Post!]! @hasMany
@@ -130,4 +135,3 @@ type Post {
     updated_at: DateTime!
 }
 
-#import sanctum.graphql
